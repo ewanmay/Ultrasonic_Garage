@@ -1,3 +1,5 @@
+
+
 //#define BLYNK_PRINT Serial
 
 
@@ -28,7 +30,7 @@ int last10_10Averages[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 // Outputs to Relay Pins
 const int garagePin = 5;
-const int lightPin = 12;
+const int lightPin = 13;
 
 // Buzzer Pin
 const int buzzerPin = 14;
@@ -70,11 +72,11 @@ void set_relay(int relay,int on_off){
 //      soundBuzzer();
     }
     terminal.println(" ON") ;
-    digitalWrite(switch_pins[relay],HIGH);
+    digitalWrite(switch_pins[relay],LOW);
   }
   else {
     terminal.println(" OFF") ;
-    digitalWrite(switch_pins[relay],LOW);
+    digitalWrite(switch_pins[relay],HIGH);
   }
   //digitalWrite(switch_pins[relay],(on_off>0));
   terminal.flush();
@@ -204,6 +206,10 @@ int updateLast10(int distance) {
     average = average + distance;
   }
 
+  
+  Serial.println("Average: ");
+  average = average / inputs;
+  
   //for added accuracy, let's take the averages of the last 10 completely different averages
   if(cycleCount == 10) {
     updateLast10Averages(average);
@@ -211,11 +217,7 @@ int updateLast10(int distance) {
   } else {
     cycleCount = cycleCount + 1;
   }
-  return average;
-  
-  Serial.println("Average: ");
   Serial.println(average);
-  average = average / inputs;
   return average;
 }
 
@@ -224,6 +226,7 @@ int determineMoving() {
     return 2;
   }
   else {
+    Serial.println("Moving parameters");
     Serial.println(last10_10Averages[0]);
     Serial.println(last10_10Averages[9]);
     float rateOfChange = float(last10_10Averages[0])/float(last10_10Averages[9]);
@@ -233,10 +236,10 @@ int determineMoving() {
     if(rateOfChange == 0.00) {
       return 2;
     }
-    else if(rateOfChange > 1.2) {
+    else if(rateOfChange > 1.4) {
       return 0;
     }
-    else if(rateOfChange < 0.8) {
+    else if(rateOfChange < 0.6) {
       return 1;
     }
     else {
@@ -266,10 +269,28 @@ void updateLast10Averages(int newAverage) {
   }
 }                                                                
 
+void printRSSI() {// set LED interval to short - default there is no link
+  // print the SSID of the network you're attached to:
+  terminal.print("SSID: ");
+  terminal.println(WiFi.SSID());
+
+  // print your WiFi shield's IP address:
+  IPAddress ip = WiFi.localIP();
+  terminal.print("IP Address: ");
+  terminal.println(ip);
+
+  // print the received signal strength:
+  long rssi = WiFi.RSSI();
+  terminal.print("signal strength (RSSI):");
+  terminal.print(rssi);
+  terminal.println(" dBm");
+  terminal.flush();
+}
+
 void setup()
 {
   // Debug console
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   Blynk.begin(auth, ssid, pass);
   // You can also specify server:
@@ -277,8 +298,9 @@ void setup()
   //Blynk.begin(auth, ssid, pass, IPAddress(192,168,1,100), 8080);
 
   //pinMode(LED_BUILTIN, OUTPUT);     // Initialize the LED_BUILTIN pin as an output
-  for (int i = 0;i<4;i++){
+  for (int i = 0;i<2;i++){
     pinMode(switch_pins[i], OUTPUT);
+    digitalWrite(switch_pins[i],HIGH);
   }
 
   // This will print Blynk Software version to the Terminal Widget when
@@ -294,6 +316,7 @@ void setup()
   pinMode(buzzerPin, OUTPUT); // Sets the buzzerPin to Output
   
   timer_number = timer.setInterval(500L, myTimerEvent);  // set LED interval to short - default there is no link
+  timer.setInterval(5000L, printRSSI);
 }
 
 //void soundBuzzer() {
