@@ -1,5 +1,3 @@
-
-
 //#define BLYNK_PRINT Serial
 
 
@@ -8,12 +6,12 @@
 
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
-char auth[] = "projecttoken";
+char auth[] = "dcaf06230d2d4a83b47d625bb2e904ce";
 
 // Your WiFi credentials.
 // Set password to "" for open networks.
-char ssid[] = "ssid";
-char pass[] = "password";
+char ssid[] = "ISitWhenIP";
+char pass[] = "plasticroad31";
 
 // Ultrasonic Sensor Pins
 const int trigPin = 0;
@@ -350,3 +348,7 @@ void loop()
     }
   }
 }
+
+
+
+//#define BLYNK_PRINT Serial
