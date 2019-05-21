@@ -88,6 +88,7 @@ const int photocellPin = A0;
 
 bool connected_to_server = false; //boolean to indicate connection
 bool heading_test_line; //boolean to indicate whether the heading of the test line has been output
+bool update_terminal = false; //boolean indicates whether to dump garage status to terminal when updating blynk
 int LED_timer; //reference to connected led timer
 int RSSI_timer; //reference to RSSI measurement timer
 int scan_status_timer; //reference to check status timer
@@ -410,6 +411,7 @@ void scan_status()
   }
   //  if (garage.update_speed == fast && (garage.door_status == opened || garage.door_status == closed)) {
   if (garage.door_status == opened || garage.door_status == closed) {
+    update_blynk(); //one last update before going slow
     change_update_interval(slow);
     //garage.update_speed = slow;
   }
@@ -571,9 +573,21 @@ BLYNK_WRITE(V1) {
     terminal.println("You said: 'Marco'");
     terminal.println("I said: 'Polo'");
   }
-  else if (String("status") == param.asStr())
-  {  terminal_status_update();}
-  else{
+  else if (String("status") == param.asStr() || String("s") == param.asStr())
+  {
+    terminal_status_update();
+  }
+  else if (String("update") == param.asStr() || String("u") == param.asStr())
+  { terminal_status_update();
+    update_terminal = true;
+  }
+  else if (String("noupdate") == param.asStr() || String("n") == param.asStr())
+  {
+    update_terminal = false;
+    terminal.println();
+    terminal.println("Periodic update off");
+  }
+  else {
     // Send it back
     terminal.print("You said:");
     terminal.write(param.getBuffer(), param.getLength());
@@ -694,7 +708,7 @@ BLYNK_WRITE(V14) {
 
 void flash_garage_light(int flashes) {
   // flash the garage light for flashes
-  for (int i = 0; i < flashes*2; i++) {
+  for (int i = 0; i < flashes * 2; i++) {
     toggle_relay(lightPin);
   }
 }
@@ -773,10 +787,14 @@ void update_blynk() {
   Blynk.virtualWrite(V12, garage.door_status_string);
   Blynk.virtualWrite(V13, WiFi.RSSI());
 
+  if (update_terminal) {
+    terminal_status_update();
+  }
+
 }
 
-void terminal_status_update(){
-    //  terminal.println("Incoming update != == == == == == == == == == == == == == == == == == == ");
+void terminal_status_update() {
+  //  terminal.println("Incoming update != == == == == == == == == == == == == == == == == == == ");
   terminal.println("Garage update ++++++++++++++++++++++++++");
   terminal.print("Door position: ");
   terminal.print(garage.door_position);
