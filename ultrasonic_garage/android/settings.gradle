@@ -1,0 +1,3 @@
+rootProject.name = 'ultrasonic_garage'
+
+include ':app'

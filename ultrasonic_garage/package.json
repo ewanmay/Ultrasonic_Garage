@@ -1,0 +1,33 @@
+{
+  "name": "ultrasonic_garage",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@types/react": "^16.8.2",
+    "@types/react-navigation": "^3.0.1",
+    "axios": "^0.18.0",
+    "react": "16.6.3",
+    "react-native": "^0.59.6",
+    "react-native-vector-icons": "^6.4.2",
+    "react-navigation": "^3.1.2",
+    "react-redux": "^6.0.0",
+    "reduce-reducers": "^0.4.3",
+    "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.3",
+    "@babel/runtime": "^7.4.3",
+    "babel-jest": "^24.7.1",
+    "jest": "^24.7.1",
+    "metro-react-native-babel-preset": "^0.53.1",
+    "react-test-renderer": "16.8.3"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
